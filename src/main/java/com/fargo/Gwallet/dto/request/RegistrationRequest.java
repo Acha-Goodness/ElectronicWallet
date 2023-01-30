@@ -1,4 +1,4 @@
-package com.fargo.Gwallet.dto.request.response;
+package com.fargo.Gwallet.dto.request;
 
 
 import lombok.AllArgsConstructor;

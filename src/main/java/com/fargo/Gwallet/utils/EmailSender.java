@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface EmailSender {
     void send(String to, String email)  throws MessagingException;
 
-    String buildEmail(String name, UUID token);
+    String buildEmail(String name, String token);
 
 
 }

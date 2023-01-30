@@ -1,26 +1,24 @@
 package com.fargo.Gwallet.service;
 
 import com.fargo.Gwallet.Repository.UserRepository;
-import com.fargo.Gwallet.dto.request.response.RegistrationRequest;
+import com.fargo.Gwallet.dto.request.RegistrationRequest;
 import com.fargo.Gwallet.model.Role;
 import com.fargo.Gwallet.model.User;
 import com.fargo.Gwallet.utils.EmailSender;
 import com.fargo.Gwallet.utils.Validator;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     EmailSender emailSender;
-
     @Autowired
     ConfirmationTokenService confirmationTokenService;
 
@@ -40,16 +38,22 @@ public class UserServiceImpl implements UserService {
         user.setLastName(register.getLastName());
         user.setEmailAddress(register.getEmail());
         user.setPassword(register.getPassword());
-        user.setUserRole(Role.ADMIN);
+        user.setUserRole(Role.USER);
 
         userRepository.save(user);
 
-        UUID token = confirmationTokenService.generateToken();
-
+        String token = confirmationTokenService.generateToken();
+        System.out.println(token);
         confirmationTokenService.createToken(token, user);
 
         emailSender.send(user.getEmailAddress(), emailSender.buildEmail(user.getFirstName(), token));
 
         return "REGISTRATION SUCCESSFUL";
+    }
+
+    @Override
+    public void enableUser(User user) {
+        user.setEnable(true);
+        userRepository.save(user);
     }
 }

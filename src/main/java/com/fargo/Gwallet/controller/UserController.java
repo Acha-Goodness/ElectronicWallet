@@ -1,6 +1,6 @@
 package com.fargo.Gwallet.controller;
 
-import com.fargo.Gwallet.dto.request.response.RegistrationRequest;
+import com.fargo.Gwallet.dto.request.RegistrationRequest;
 import com.fargo.Gwallet.service.UserService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;

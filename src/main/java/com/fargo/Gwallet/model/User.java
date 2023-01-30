@@ -22,5 +22,5 @@ public class User {
     private String emailAddress;
     private String password;
     private Role userRole;
-    private boolean isEnable;
+    private boolean isEnable = false;
 }
