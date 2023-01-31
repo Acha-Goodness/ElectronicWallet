@@ -1,5 +1,6 @@
 package com.fargo.Gwallet.controller;
 
+import com.fargo.Gwallet.dto.request.Login;
 import com.fargo.Gwallet.dto.request.RegistrationRequest;
 import com.fargo.Gwallet.service.UserService;
 import jakarta.mail.MessagingException;
@@ -21,5 +22,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationRequest registrationRequest) throws MessagingException {
         return new ResponseEntity<>(userService.register(registrationRequest),HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Login login){
+        return new ResponseEntity<>(userService.logInUser(login), HttpStatus.OK);
     }
 }

@@ -1,9 +1,11 @@
 package com.fargo.Gwallet.controller;
 
 
+import com.fargo.Gwallet.dto.request.ResendTokenRequest;
 import com.fargo.Gwallet.dto.request.VerifyTokenRequest;
 import com.fargo.Gwallet.model.ConfirmationToken;
 import com.fargo.Gwallet.service.ConfirmationTokenService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +24,10 @@ public class ConfirmationTokenController {
     @PostMapping("/confirmToken")
     public ResponseEntity<?> verifyToken(@RequestBody VerifyTokenRequest verifyToken){
         return new ResponseEntity<>(confirmationTokenService.verifyToken(verifyToken), HttpStatus.OK);
+    }
+
+    @PostMapping("/resendToken")
+    public ResponseEntity<?> resendToken(@RequestBody ResendTokenRequest resendToken) throws MessagingException {
+        return new ResponseEntity<>(confirmationTokenService.resendToken(resendToken), HttpStatus.OK);
     }
 }

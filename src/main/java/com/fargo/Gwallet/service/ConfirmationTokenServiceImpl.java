@@ -1,9 +1,12 @@
 package com.fargo.Gwallet.service;
 
 import com.fargo.Gwallet.Repository.ConfirmationTokenRepository;
+import com.fargo.Gwallet.dto.request.ResendTokenRequest;
 import com.fargo.Gwallet.dto.request.VerifyTokenRequest;
 import com.fargo.Gwallet.model.ConfirmationToken;
 import com.fargo.Gwallet.model.User;
+import com.fargo.Gwallet.utils.EmailSender;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +21,16 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ConfirmationTokenService confirmationTokenService;
+
+    @Autowired
+    EmailSender emailSender;
+
     @Override
     public String verifyToken(VerifyTokenRequest verifyToken) {
-        ConfirmationToken savedToken = confirmationTokenRepository.findByTokenNumberIgnoreCase(verifyToken.getTokenNumber())
+        ConfirmationToken savedToken = confirmationTokenRepository
+                .findByTokenNumberIgnoreCase(verifyToken.getTokenNumber())
                 .orElseThrow(() -> new IllegalArgumentException("TOKEN DOES NOT EXIST"));
 
         if(savedToken.getExpiredAt().isBefore(LocalDateTime.now())) return "TOKEN HAS EXPIRED";
@@ -46,5 +56,15 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         confirmationToken.setUser(user);;
 
         confirmationTokenRepository.save(confirmationToken);
+    }
+
+    @Override
+    public String resendToken(ResendTokenRequest resendToken) throws MessagingException {
+        User user = userService.findUserByEmail(resendToken.getEmail());
+        String token = generateToken();
+        createToken(token, user);
+        emailSender.send(user.getEmailAddress(), emailSender.buildEmail(user.getFirstName(), token));
+
+        return "NEW TOKEN HAS BEEN SENT TO YOUR EMAIL";
     }
 }
