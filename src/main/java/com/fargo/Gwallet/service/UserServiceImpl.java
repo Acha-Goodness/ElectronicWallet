@@ -1,7 +1,8 @@
 package com.fargo.Gwallet.service;
 
 import com.fargo.Gwallet.Repository.UserRepository;
-import com.fargo.Gwallet.dto.request.Login;
+import com.fargo.Gwallet.dto.request.ForgotPasswordRequest;
+import com.fargo.Gwallet.dto.request.LoginRuquest;
 import com.fargo.Gwallet.dto.request.RegistrationRequest;
 import com.fargo.Gwallet.model.Role;
 import com.fargo.Gwallet.model.User;
@@ -64,11 +65,10 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
          return userRepository.findUserByEmailAddressIgnoreCase(email)
                     .orElseThrow(() -> new IllegalArgumentException("EMAIL ADDRESS DOES NOT EXIST"));
-
     }
 
     @Override
-    public String logInUser(Login login) {
+    public String logInUser(LoginRuquest login) {
         User user = userRepository.findUserByEmailAddressIgnoreCase(login.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("INCORRECT EMAIL ADDRESS"));
 
@@ -76,4 +76,17 @@ public class UserServiceImpl implements UserService {
         if(!user.isEnable()) throw new IllegalArgumentException("ACCOUNT NOT ENABLE, VERIFY YOUR TOKEN");
         return "LOGIN IS SUCCESSFUL";
     }
-}
+
+    @Override
+    public String forgotPassword(ForgotPasswordRequest passwordRequest, Long id) {
+        if(!Validator.isValidPassword(passwordRequest.getNewPassword())) throw new IllegalArgumentException("PASSWORD IS NOT IN THE RIGHT FORMAT");
+        if(!passwordRequest.getConfirmPassword().equals(passwordRequest.getNewPassword())) throw new IllegalArgumentException("PASSWORD IS NOT THE SAME");
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND"));
+
+        user.setPassword(passwordRequest.getConfirmPassword());
+
+        userRepository.save(user);
+        
+        return "NEW PASSWORD CONFIRMED";
+    }
+}g
